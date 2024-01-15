@@ -1,4 +1,4 @@
-/* Libs - LibC/LibFile
+/* Libs - LibC/LibMath
  * Copyright (C) 2024  Andrea Michael Maria Molino
  *
  * This program is free software: you can redistribute it and/or modify
