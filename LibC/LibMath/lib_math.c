@@ -18,5 +18,9 @@
 #include "lib_math.h"
 
 float compute_compression_ratio(float uncompressed_size, float compressed_size){
-    return uncompressed_size/compressed_size;
+    return uncompressed_size / compressed_size;
+}
+
+float compute_space_saving(float compressed_size, float uncompressed_size){
+    return 1 - compressed_size / uncompressed_size;
 }

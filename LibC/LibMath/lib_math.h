@@ -18,3 +18,4 @@
 #pragma once
 
 float compute_compression_ratio(float uncompressed_size, float compressed_size);
+float compute_space_saving(float compressed_size, float uncompressed_size);
