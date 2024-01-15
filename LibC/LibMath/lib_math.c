@@ -22,5 +22,9 @@ float compute_compression_ratio(float uncompressed_size, float compressed_size){
 }
 
 float compute_space_saving(float compressed_size, float uncompressed_size){
-    return 1 - compressed_size / uncompressed_size;
+    return 1 - (compressed_size / uncompressed_size);
+}
+
+float compute_percentage_from_value(float value){
+    return value * 100;
 }
