@@ -55,7 +55,7 @@ void is_file_open(FILE* file_to_open){
 }
 
 char* read_entire_file(const char* file){
-    FILE* fp = fopen(file, "r");
+    FILE* fp = fopen(file, "rb");
     is_file_open(fp);
 
     size_t filesize = get_filesize(fp);
