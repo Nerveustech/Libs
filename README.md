@@ -14,4 +14,4 @@ cp LibC/LibFile/* [Path_of_Your_Project]
 ```
 
 # License
-Distributed under the GPL-3 License. See LICENSE for more information.
+Distributed under the MIT License. See LICENSE for more information.
