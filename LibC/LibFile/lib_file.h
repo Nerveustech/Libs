@@ -19,8 +19,11 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <errno.h>
 
 long get_filesize(FILE* file);
 long get_filesize_from_file(const char* file);
 void is_file_open(FILE* file_to_open);
+
+char* read_entire_file(const char* file);

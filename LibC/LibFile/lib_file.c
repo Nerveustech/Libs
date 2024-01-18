@@ -49,9 +49,29 @@ long get_filesize_from_file(const char* file){
 
 void is_file_open(FILE* file_to_open){
     if(file_to_open == NULL){
-        fprintf(stderr, "[ERROR] Could not open: %s", strerror(errno));
+        fprintf(stderr, "[ERROR] Could not open: %s\n", strerror(errno));
         return;
     }
-
 }
 
+char* read_entire_file(const char* file){
+    FILE* fp = fopen(file, "r");
+    is_file_open(fp);
+
+    size_t filesize = get_filesize(fp);
+
+    char* internal_buffer = (char*)calloc(filesize + 1, sizeof(char));
+    if(internal_buffer == NULL){
+        fprintf(stderr, "[ERROR] Could not allocate memory\n");
+        return NULL;
+    }
+
+    if(!fread(internal_buffer, filesize, 1, fp)){
+        fprintf(stderr, "[ERROR] Could not read file:%s\n", file);
+        return NULL;
+    }
+
+    fclose(fp);
+
+    return internal_buffer;
+}
