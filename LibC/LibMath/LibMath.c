@@ -22,7 +22,7 @@
  * SOFTWARE.
 */
 
-#include "lib_math.h"
+#include "LibMath.h"
 
 float compute_compression_ratio(float uncompressed_size, float compressed_size){
     return uncompressed_size / compressed_size;

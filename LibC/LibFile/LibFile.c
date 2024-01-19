@@ -22,7 +22,7 @@
  * SOFTWARE.
 */
 
-#include "lib_file.h"
+#include "LibFile.h"
 
 long get_filesize(FILE* file){
     is_file_open(file);
