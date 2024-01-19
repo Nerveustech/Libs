@@ -25,6 +25,7 @@
 #pragma once
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define get_array_len(array) (sizeof(array) / sizeof((array)[0]))
 #define UNUSED(param) (void)param
