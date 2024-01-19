@@ -25,6 +25,7 @@
 #pragma once
 
 #define get_array_len(array) (sizeof(array) / sizeof((array)[0]))
+#define UNUSED(param) (void)param
 
 typedef char* string;
 typedef const char* file_path;
