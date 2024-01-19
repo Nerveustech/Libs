@@ -24,8 +24,12 @@
 
 #pragma once
 
+#include <stdio.h>
+
 #define get_array_len(array) (sizeof(array) / sizeof((array)[0]))
 #define UNUSED(param) (void)param
+#define UNIMPLEMENTED(function) fprintf(stderr, "[ERROR] %s:%d:%s not implemented yet!\n", __FILE__, __LINE__, function);\
+                                exit(1);
 
 typedef char* string;
 typedef const char* file_path;
