@@ -10,7 +10,7 @@ Now you will have to copy and include the library you need inside your project a
 cp LibC/LibFile/* [Path_of_Your_Project]
 ```
 ```c
-#include "LibFile/lib_file.h"
+#include "LibFile/LibFile.h"
 ```
 
 # License
