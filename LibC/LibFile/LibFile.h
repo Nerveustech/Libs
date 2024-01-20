@@ -33,4 +33,5 @@ long get_filesize(FILE* file);
 long get_filesize_from_file(const char* file);
 void is_file_open(FILE* file_to_open);
 
+char* read_some_data_from_file(const char* file, size_t nelem);
 char* read_entire_file(const char* file);

@@ -61,6 +61,26 @@ void is_file_open(FILE* file_to_open){
     }
 }
 
+char* read_some_data_from_file(const char* file, size_t nelem){
+    FILE* fp = fopen(file, "rb");
+    is_file_open(fp);
+
+    char* internal_buffer = (char*)calloc(nelem + 1, sizeof(char));
+    if(internal_buffer == NULL){
+        fprintf(stderr, "[ERROR] Could not allocate memory\n");
+        return NULL;
+    }
+
+    if(!fread(internal_buffer, nelem, 1, fp)){
+        fprintf(stderr, "[ERROR] Could not read file:%s\n", file);
+        return NULL;
+    }
+
+    fclose(fp);
+
+    return internal_buffer;
+}
+
 char* read_entire_file(const char* file){
     FILE* fp = fopen(file, "rb");
     is_file_open(fp);
