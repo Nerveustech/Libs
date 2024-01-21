@@ -61,7 +61,7 @@ void is_file_open(FILE* file_to_open){
     }
 }
 
-char* read_some_data_from_file(const char* file, size_t nelem){
+char* read_buffer_file(const char* file, size_t nelem){
     FILE* fp = fopen(file, "rb");
     is_file_open(fp);
 
