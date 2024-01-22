@@ -155,3 +155,23 @@ bool is_file_png(const char* file){
     free(buffer_png_file);
     return false;
 }
+
+bool is_file_pdf(const char* file){
+    const uint8_t pdf_magic_number[5] = {0x25, 0x50, 0x44, 0x46, 0x2D};
+
+    char* buffer_pdf_file = read_buffer_file(file, 5);
+
+    if(buffer_pdf_file == NULL){
+        fprintf(stderr, "[ERROR] Buffer is NULL\n");
+        fprintf(stderr, "[ERROR] Could not identify file\n");
+        return false;
+    }
+
+    if(memcmp(buffer_pdf_file, pdf_magic_number, 5) == 0){
+        free(buffer_pdf_file);
+        return true;
+    }
+
+    free(buffer_pdf_file);
+    return false;
+}

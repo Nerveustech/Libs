@@ -33,7 +33,7 @@
 
 long get_filesize(FILE* file);
 long get_filesize_from_file(const char* file);
-void is_file_open(FILE* file_to_open);
+bool is_file_open(FILE* file_to_open);
 
 char* read_buffer_file(const char* file, size_t nelem);
 char* read_entire_file(const char* file);
@@ -41,3 +41,4 @@ char* read_entire_file(const char* file);
 
 bool is_file_elf(const char* file);
 bool is_file_png(const char* file);
+bool is_file_pdf(const char* file);
