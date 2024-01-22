@@ -54,16 +54,18 @@ long get_filesize_from_file(const char* file){
     return filesize;
 }
 
-void is_file_open(FILE* file_to_open){
+bool is_file_open(FILE* file_to_open){
     if(file_to_open == NULL){
         fprintf(stderr, "[ERROR] Could not open: %s\n", strerror(errno));
-        return;
+        return false;
     }
+    return true;
 }
 
 char* read_buffer_file(const char* file, size_t nelem){
     FILE* fp = fopen(file, "rb");
-    is_file_open(fp);
+    
+    if(is_file_open(fp) == false) return NULL;
 
     char* internal_buffer = (char*)calloc(nelem + 1, sizeof(char));
     if(internal_buffer == NULL){
@@ -73,6 +75,7 @@ char* read_buffer_file(const char* file, size_t nelem){
 
     if(!fread(internal_buffer, nelem, 1, fp)){
         fprintf(stderr, "[ERROR] Could not read file:%s\n", file);
+        free(internal_buffer);
         return NULL;
     }
 
@@ -83,7 +86,8 @@ char* read_buffer_file(const char* file, size_t nelem){
 
 char* read_entire_file(const char* file){
     FILE* fp = fopen(file, "rb");
-    is_file_open(fp);
+    
+    if(is_file_open(fp) == false) return NULL;
 
     size_t filesize = get_filesize(fp);
 
@@ -95,6 +99,7 @@ char* read_entire_file(const char* file){
 
     if(!fread(internal_buffer, filesize, 1, fp)){
         fprintf(stderr, "[ERROR] Could not read file:%s\n", file);
+        free(internal_buffer);
         return NULL;
     }
 
