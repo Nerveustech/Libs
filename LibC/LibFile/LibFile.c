@@ -102,3 +102,25 @@ char* read_entire_file(const char* file){
 
     return internal_buffer;
 }
+
+//Section CHECK_FILE_TYPE
+
+bool is_file_elf(const char* file){
+    const uint8_t elf_magic_number[4] = { 0x7F, 0x45, 0x4C, 0x46};
+    
+    char* buffer_elf_file = read_buffer_file(file, 4);
+
+    if(buffer_elf_file == NULL){
+        fprintf(stderr, "[ERROR] Buffer is NULL\n");
+        fprintf(stderr, "[ERROR] Could not identify file\n");
+        return false;
+    }
+
+    if(memcmp(buffer_elf_file, elf_magic_number, 4) == 0){
+        free(buffer_elf_file);
+        return true;
+    }
+
+    free(buffer_elf_file);
+    return false;
+}

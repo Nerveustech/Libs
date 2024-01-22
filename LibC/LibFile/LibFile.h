@@ -27,6 +27,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <errno.h>
 
 long get_filesize(FILE* file);
@@ -35,3 +37,6 @@ void is_file_open(FILE* file_to_open);
 
 char* read_buffer_file(const char* file, size_t nelem);
 char* read_entire_file(const char* file);
+
+
+bool is_file_elf(const char* file);
