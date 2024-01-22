@@ -124,3 +124,29 @@ bool is_file_elf(const char* file){
     free(buffer_elf_file);
     return false;
 }
+
+bool is_file_png(const char* file){
+    const uint8_t png_magic_number[8]         = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+    const uint8_t png_magic_number_variant[8] = {0x50, 0x89, 0x47, 0x4E, 0x0A, 0x0D, 0x0A, 0x1A};
+
+    char* buffer_png_file = read_buffer_file(file, 8);
+    
+    if(buffer_png_file == NULL){
+        fprintf(stderr, "[ERROR] Buffer is NULL\n");
+        fprintf(stderr, "[ERROR] Could not identify file\n");
+        return false;
+    }
+
+    if(memcmp(buffer_png_file, png_magic_number, 8) == 0){
+        free(buffer_png_file);
+        return true;
+    }
+
+    if(memcmp(buffer_png_file, png_magic_number_variant, 8) == 0){
+        free(buffer_png_file);
+        return true;
+    }
+
+    free(buffer_png_file);
+    return false;
+}

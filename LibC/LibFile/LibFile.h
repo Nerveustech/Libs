@@ -40,3 +40,4 @@ char* read_entire_file(const char* file);
 
 
 bool is_file_elf(const char* file);
+bool is_file_png(const char* file);
