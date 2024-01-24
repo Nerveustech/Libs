@@ -32,3 +32,13 @@ String_View sv_append(char* string){
 
     return string_to_append;
 }
+
+char* sv_to_cstr(String_View sv){
+    char* sv_buffer = (char*)calloc(sv.size + 1, sizeof(char));
+    if(sv_buffer == NULL) return NULL;
+
+    strcpy(sv_buffer, sv.string);
+    sv_buffer[sv.size] = '\0';
+    
+    return sv_buffer;
+}

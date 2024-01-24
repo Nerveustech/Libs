@@ -25,6 +25,7 @@
 #pragma once
 
 #include <string.h>
+#include <stdlib.h>
 
 typedef struct
 {
@@ -34,3 +35,4 @@ typedef struct
 
 
 String_View sv_append(char* string);
+char* sv_to_cstr(String_View sv);
