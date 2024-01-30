@@ -26,6 +26,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct
 {
@@ -36,3 +37,4 @@ typedef struct
 
 String_View sv_append(char* string);
 char* sv_to_cstr(String_View sv);
+bool sv_cmp(String_View sv, String_View sv2);

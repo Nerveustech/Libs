@@ -42,3 +42,18 @@ char* sv_to_cstr(String_View sv){
     
     return sv_buffer;
 }
+
+bool sv_cmp(String_View sv, String_View sv2){
+
+    //Avoid wasting time on compare
+    if(sv.size != sv2.size){
+        return false;
+    }
+
+    for(size_t i = 0; i < sv.size; i++){
+        if(sv.string[i] != sv2.string[i])
+            return false;
+    }
+    
+    return true;
+}
