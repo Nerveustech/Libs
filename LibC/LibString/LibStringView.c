@@ -27,6 +27,12 @@
 String_View sv_append(char* string){
     String_View string_to_append = {0};
     
+    if(string == NULL) {
+        string_to_append.string = "NULL";
+        string_to_append.size = strlen("NULL");
+        return string_to_append;
+    }
+    
     string_to_append.string = string;
     string_to_append.size = strlen(string);
 
