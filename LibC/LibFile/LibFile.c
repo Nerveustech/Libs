@@ -108,6 +108,32 @@ char* read_entire_file(const char* file){
     return internal_buffer;
 }
 
+bool write_entire_file(const char* file, void* data, size_t size){
+    FILE* fp = fopen(file, "wb");
+
+    if(is_file_open(fp) == false) return false;
+
+    if(data == NULL){
+        fprintf(stderr, "[ERROR] write_entire_file(%s, NULL, %zu) data is NULL\n", file, size);
+        fclose(fp);
+        return false;
+    }
+
+    if(size == 0){
+        fprintf(stderr, "[WARNING] write_entire_file(%s, data, %zu) size is 0\n", file, size);
+    }
+
+    if(!fwrite(data, size, 1, fp)){
+        fprintf(stderr, "[ERROR] Could not write file:%s\n", file);
+        fclose(fp);
+        return false;
+    }
+
+    fclose(fp);
+    return true;
+}
+
+
 //Section CHECK_FILE_TYPE
 
 bool is_file_elf(const char* file){
