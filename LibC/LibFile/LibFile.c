@@ -201,3 +201,74 @@ bool is_file_pdf(const char* file){
     free(buffer_pdf_file);
     return false;
 }
+
+bool is_file_jpg(const char* file){
+    const uint8_t jpg_magic_number[12] = {0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01};
+    
+    char* buffer_jpg_file = read_buffer_file(file, 12);
+
+    if(buffer_jpg_file == NULL){
+        fprintf(stderr, "[ERROR] Buffer is NULL\n");
+        fprintf(stderr, "[ERROR] Could not identify file\n");
+        return false;
+    }
+
+    if(memcmp(buffer_jpg_file, jpg_magic_number, 12) == 0){
+        free(buffer_jpg_file);
+        return true;
+    }
+    free(buffer_jpg_file);
+    
+    const uint8_t jpg_magic_number_variant[4]   = {0xFF, 0xD8, 0xFF, 0xEE};
+    char* buffer_jpg_file_2 = read_buffer_file(file, 4);
+    
+    if(buffer_jpg_file_2 == NULL){
+        fprintf(stderr, "[ERROR] Buffer is NULL\n");
+        fprintf(stderr, "[ERROR] Could not identify file\n");
+        return false;
+    }
+
+    if(memcmp(buffer_jpg_file_2, jpg_magic_number_variant, 4) == 0){
+        free(buffer_jpg_file_2);
+        return true;
+    }
+    free(buffer_jpg_file_2);
+
+
+    const uint8_t jpg_magic_number_variant2[4]  = {0xFF, 0xD8, 0xFF, 0xE0};
+    char* buffer_jpg_file_3 = read_buffer_file(file, 4);
+
+    if(buffer_jpg_file_3 == NULL){
+        fprintf(stderr, "[ERROR] Buffer is NULL\n");
+        fprintf(stderr, "[ERROR] Could not identify file\n");
+        return false;
+    }
+
+    if(memcmp(buffer_jpg_file_3, jpg_magic_number_variant2, 4) == 0){
+        free(buffer_jpg_file_3);
+        return true;
+    }
+    free(buffer_jpg_file_3);
+
+
+    const uint8_t jpg_magic_number_variant3[12] = {0xFF, 0xD8, 0xFF, 0xE1, 0x3F, 0x3F, 0x45, 0x78, 0x69, 0x66, 0x00, 0x00};//0x3F == ? skippable
+    char* buffer_jpg_file_4 = read_buffer_file(file, 12);
+
+    if(buffer_jpg_file_4 == NULL){
+        fprintf(stderr, "[ERROR] Buffer is NULL\n");
+        fprintf(stderr, "[ERROR] Could not identify file\n");
+        return false;
+    }
+
+    for(int i = 0; i < 12; i++){
+        if(buffer_jpg_file_4[i] == 0x3F){
+            i++;
+        }
+        if(memcmp(&buffer_jpg_file_4[i], &jpg_magic_number_variant3[i], 1) != 0){
+            return false;
+        }
+    }
+    free(buffer_jpg_file_4);
+    return true;
+
+}

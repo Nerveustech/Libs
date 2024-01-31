@@ -42,3 +42,4 @@ bool  write_entire_file(const char* file, void* data, size_t size);
 bool is_file_elf(const char* file);
 bool is_file_png(const char* file);
 bool is_file_pdf(const char* file);
+bool is_file_jpg(const char* file);
