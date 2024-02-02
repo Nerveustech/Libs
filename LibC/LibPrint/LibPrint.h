@@ -93,16 +93,16 @@
 #endif
 
 
-void print_log(int color, const char* format, ...);
+void print_log(int log_type, const char* format, ...);
 
 #ifdef LIB_PRINT_IMPLEMENTATION
 
-void print_log(int color, const char* format, ...){
+void print_log(int log_type, const char* format, ...){
 #ifdef __linux__
     va_list args;
     va_start(args, format);
 
-    switch (color)
+    switch (log_type)
     {
         case LOG_SUCCESS:
             fprintf(stdout, "%s[SUCCESS]%s ", C_GREEN, C_RESET);
@@ -139,7 +139,7 @@ void print_log(int color, const char* format, ...){
     HANDLE hConsole;
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    switch (color)
+    switch (log_type)
     {
         case LOG_SUCCESS:
             SetConsoleTextAttribute(hConsole, C_GREEN);
