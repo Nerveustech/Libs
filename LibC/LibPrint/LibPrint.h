@@ -94,6 +94,7 @@
 
 
 void print_log(int log_type, const char* format, ...);
+void log_file(const char* file, int log_type, const char* format, ...);
 
 #ifdef LIB_PRINT_IMPLEMENTATION
 
@@ -178,5 +179,54 @@ void print_log(int log_type, const char* format, ...){
     return;
 #endif
 }
+
+void log_file(const char* file, int log_type, const char* format, ...){
+    FILE* file_to_open = fopen(file, "a");
+
+    if(file_to_open == NULL){
+        print_log(LOG_ERROR, "[ERROR] Could not open: %s for log\n", file);
+        return;
+    }
+
+    va_list args;
+    va_start(args, format);
+
+    switch(log_type){
+        case LOG_SUCCESS:
+            fprintf(file_to_open, "[SUCCESS] ");
+            vfprintf(file_to_open, format, args);
+            fprintf(file_to_open, "\n");
+            break;
+    
+        case LOG_ERROR:
+            fprintf(file_to_open, "[ERROR] ");
+            vfprintf(file_to_open, format, args);
+            fprintf(file_to_open, "\n");
+            break;
+        
+        case LOG_INFO:
+            fprintf(file_to_open, "[INFO] ");
+            vfprintf(file_to_open, format, args);
+            fprintf(file_to_open, "\n");
+            break;
+        
+        case LOG_WARNING:
+            fprintf(file_to_open, "[WARNING] ");
+            vfprintf(file_to_open, format, args);
+            fprintf(file_to_open, "\n");
+            break;
+        
+        default:
+            vfprintf(file_to_open, format, args);
+            fprintf(file_to_open, "\n");
+            break;
+    }
+
+    va_end(args);
+    fclose(file_to_open);
+    
+    return;
+}
+
 
 #endif
