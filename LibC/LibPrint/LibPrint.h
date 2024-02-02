@@ -113,7 +113,7 @@ void print_log(int log_type, const char* format, ...){
         case LOG_ERROR:
             fprintf(stdout, "%s[ERROR]%s ", C_RED, C_RESET);
             vfprintf(stdout, format, args);
-            va_end(args);
+            break;
         
         case LOG_INFO:
             fprintf(stdout, "%s[INFO]%s ", C_BLUE, C_RESET);
@@ -154,7 +154,7 @@ void print_log(int log_type, const char* format, ...){
             fprintf(stdout, "[ERROR] ");
             SetConsoleTextAttribute(hConsole, C_RESET);
             vfprintf(stdout, format, args);
-            va_end(args);
+            break;
         
         case LOG_INFO:
             SetConsoleTextAttribute(hConsole, C_BLUE);
