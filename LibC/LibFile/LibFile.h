@@ -37,7 +37,9 @@ bool is_file_open(FILE* file_to_open);
 
 char* read_buffer_file(const char* file, size_t nelem);
 char* read_entire_file(const char* file);
-bool  write_entire_file(const char* file, void* data, size_t size);
+
+bool write_entire_file(const char* file, void* data, size_t size);
+bool write_zero_file(const char* file, size_t size);
 
 bool is_file_elf(const char* file);
 bool is_file_png(const char* file);

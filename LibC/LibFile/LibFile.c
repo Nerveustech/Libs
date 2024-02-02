@@ -133,6 +133,23 @@ bool write_entire_file(const char* file, void* data, size_t size){
     return true;
 }
 
+bool write_zero_file(const char* file, size_t size){
+    void* zero_file = calloc(size, sizeof(void*));
+    
+    if(zero_file == NULL){
+        fprintf(stderr, "[ERROR] Could not allocate memory\n");
+        return false;
+    }
+
+    if(write_entire_file(file, zero_file, size) == false){
+        free(zero_file);
+        return false;
+    }
+
+    free(zero_file);
+    return true;
+}
+
 
 //Section CHECK_FILE_TYPE
 
