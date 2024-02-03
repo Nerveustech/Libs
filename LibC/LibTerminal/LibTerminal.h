@@ -29,10 +29,12 @@
 
 #elif __WIN32
     #include <windows.h>
+    #include <stdio.h>
     #define WIN32_LEAN_AND_MEAN
 #endif
 
 int clear_terminal(void);
+int hide_cursor(void);
 
 #ifdef __WIN32
 int __internal_windows_terminal_helper(PCWSTR escape_code);
