@@ -35,6 +35,7 @@
 
 int clear_terminal(void);
 int hide_cursor(void);
+int show_cursor(void);
 
 #ifdef __WIN32
 int __internal_windows_terminal_helper(PCWSTR escape_code);

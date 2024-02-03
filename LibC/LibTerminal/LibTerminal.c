@@ -68,6 +68,27 @@ int hide_cursor(void){
 #endif
 }
 
+int show_cursor(void){
+#ifdef __linux__
+    printf("\033[?25h");
+    
+    if(fflush(stdout) == EOF) return 1;
+
+    return 0;
+#elif __WIN32
+
+    PCWSTR show_cursor = L"\x1b[?25h";
+
+    if(__internal_windows_terminal_helper(show_cursor) != 0){
+        return 1;
+    }
+    if(fflush(stdout) == EOF) return 1;
+    
+    return 0;
+
+#endif
+}
+
 #ifdef __WIN32
 int __internal_windows_terminal_helper(PCWSTR escape_code){
 //https://learn.microsoft.com/en-us/windows/console/clearing-the-screen taken as an example
