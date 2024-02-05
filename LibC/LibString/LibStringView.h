@@ -27,14 +27,16 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 typedef struct
 {
-    char* string;
+    const char* string;
     size_t size;
 }String_View;
 
 
-String_View sv_append(char* string);
+String_View sv_append(const char* string);
 char* sv_to_cstr(String_View sv);
 bool sv_cmp(String_View sv, String_View sv2);
+String_View sv_trim_left(String_View sv);

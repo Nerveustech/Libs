@@ -23,8 +23,9 @@
 */
 
 #include "LibStringView.h"
+#include <stdio.h>
 
-String_View sv_append(char* string){
+String_View sv_append(const char* string){
     String_View string_to_append = {0};
     
     if(string == NULL) {
@@ -62,4 +63,20 @@ bool sv_cmp(String_View sv, String_View sv2){
     }
     
     return true;
+}
+
+String_View sv_trim_left(String_View sv){
+    size_t space_counter = 0;
+
+    for(size_t i = 0; i < sv.size; i++){
+
+        if(isspace(sv.string[i]) != 0)
+            space_counter++;
+        
+        if(isspace(sv.string[i]) == 0)
+            break;
+        
+    }
+
+    return sv_append(&sv.string[space_counter]);
 }
