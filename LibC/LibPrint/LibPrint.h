@@ -39,9 +39,11 @@
     #define C_GREEN  "\x1B[1;32m"
     #define C_YELLOW "\x1B[1;33m"
     #define C_BLUE   "\x1B[1;34m"
-#elif __WIN32
+    #define C_ORANGE "\x1B[1;93m"
+#elif _WIN32
+    #define WIN32_LEAN_AND_MEAN 
     #include <windows.h>
-    #define WIN32_LEAN_AND_MEAN
+/*
     #define NOGDICAPMASKS
     #define NOVIRTUALKEYCODES
     #define NOWINMESSAGES
@@ -79,6 +81,7 @@
     #define NOPROFILER
     #define NODEFERWINDOWPOS
     #define NOMCX
+*/
     
     #define LOG_SUCCESS  0
     #define LOG_ERROR    1
@@ -90,6 +93,7 @@
     #define C_GREEN  2
     #define C_YELLOW 6
     #define C_BLUE   1
+    #define C_ACQUA FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY
 #endif
 
 
@@ -116,12 +120,12 @@ void print_log(int log_type, const char* format, ...){
             break;
         
         case LOG_INFO:
-            fprintf(stdout, "%s[INFO]%s ", C_BLUE, C_RESET);
+            fprintf(stdout, "%s[INFO]%s ", C_YELLOW, C_RESET);
             vfprintf(stdout, format, args);
             break;
         
         case LOG_WARNING:
-            fprintf(stdout, "%s[WARNING]%s ", C_YELLOW, C_RESET);
+            fprintf(stdout, "%s[WARNING]%s ", C_ORANGE, C_RESET);
             vfprintf(stdout, format, args);
             break;
         
@@ -132,7 +136,7 @@ void print_log(int log_type, const char* format, ...){
 
     va_end(args);
     return;
-#elif __WIN32
+#elif _WIN32
     va_list args;
     va_start(args, format);
 
@@ -157,8 +161,9 @@ void print_log(int log_type, const char* format, ...){
             break;
         
         case LOG_INFO:
-            SetConsoleTextAttribute(hConsole, C_BLUE);
+            SetConsoleTextAttribute(hConsole, C_ACQUA);
             fprintf(stdout, "[INFO] ");
+            SetConsoleTextAttribute(hConsole, C_RESET);
             vfprintf(stdout, format, args);
             break;
         
