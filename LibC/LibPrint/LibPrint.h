@@ -40,6 +40,9 @@
     #define C_YELLOW "\x1B[1;33m"
     #define C_BLUE   "\x1B[1;34m"
     #define C_ORANGE "\x1B[1;93m"
+
+void print_log(int log_type, const char* format, ...);
+
 #elif _WIN32
     #define WIN32_LEAN_AND_MEAN 
     #include <windows.h>
@@ -94,16 +97,17 @@
     #define C_YELLOW 6
     #define C_BLUE   1
     #define C_ACQUA FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY
+    
+    void print_log(int log_type, const WCHAR* format, ...);
 #endif
 
-
-void print_log(int log_type, const char* format, ...);
 void log_file(const char* file, int log_type, const char* format, ...);
 
 #ifdef LIB_PRINT_IMPLEMENTATION
 
-void print_log(int log_type, const char* format, ...){
 #ifdef __linux__
+void print_log(int log_type, const char* format, ...){
+
     va_list args;
     va_start(args, format);
 
@@ -136,7 +140,12 @@ void print_log(int log_type, const char* format, ...){
 
     va_end(args);
     return;
-#elif _WIN32
+}
+#endif
+
+#ifdef _WIN32
+void print_log(int log_type, const WCHAR* format, ...)
+{
     va_list args;
     va_start(args, format);
 
@@ -148,48 +157,53 @@ void print_log(int log_type, const char* format, ...){
     {
         case LOG_SUCCESS:
             SetConsoleTextAttribute(hConsole, C_GREEN);
-            fprintf(stdout, "[SUCCESS] ");
+            fwprintf(stdout, L"[SUCCESS] ");
             SetConsoleTextAttribute(hConsole, C_RESET);
-            vfprintf(stdout, format, args);
+            vfwprintf(stdout, format, args);
             break;
     
         case LOG_ERROR:
             SetConsoleTextAttribute(hConsole, C_RED);
-            fprintf(stdout, "[ERROR] ");
+            fwprintf(stdout, L"[ERROR] ");
             SetConsoleTextAttribute(hConsole, C_RESET);
-            vfprintf(stdout, format, args);
+            vfwprintf(stdout, format, args);
             break;
         
         case LOG_INFO:
             SetConsoleTextAttribute(hConsole, C_ACQUA);
-            fprintf(stdout, "[INFO] ");
+            fwprintf(stdout, L"[INFO] ");
             SetConsoleTextAttribute(hConsole, C_RESET);
-            vfprintf(stdout, format, args);
+            vfwprintf(stdout, format, args);
             break;
         
         case LOG_WARNING:
             SetConsoleTextAttribute(hConsole, C_YELLOW);
-            fprintf(stdout, "[WARNING] ");
+            fwprintf(stdout, L"[WARNING] ");
             SetConsoleTextAttribute(hConsole, C_RESET);
-            vfprintf(stdout, format, args);
+            vfwprintf(stdout, format, args);
             break;
         
         default:
-            vfprintf(stdout, format, args);
+            vfwprintf(stdout, format, args);
             break;
     }
 
     va_end(args);
 
     return;
-#endif
+
 }
+#endif
 
 void log_file(const char* file, int log_type, const char* format, ...){
     FILE* file_to_open = fopen(file, "a");
 
     if(file_to_open == NULL){
-        print_log(LOG_ERROR, "[ERROR] Could not open: %s for log\n", file);
+        #ifdef __linux__
+            print_log(LOG_ERROR, "[ERROR] Could not open: %s for log\n", file);
+        #elif _WIN32
+            print_log(LOG_ERROR, L"[ERROR] Could not open: %s for log\n", file);
+        #endif
         return;
     }
 
