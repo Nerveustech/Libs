@@ -33,6 +33,7 @@
     #define LOG_ERROR    1
     #define LOG_INFO     2
     #define LOG_WARNING  3
+    #define LOG_EMPTY    4
 
     #define C_RESET  "\x1B[0m"
     #define C_RED    "\x1B[1;31m"
@@ -41,7 +42,8 @@
     #define C_BLUE   "\x1B[1;34m"
     #define C_ORANGE "\x1B[1;93m"
 
-void print_log(int log_type, const char* format, ...);
+    void print_log(int log_type, const char* format, ...);
+    void log_file(const char* file, int log_type, const char* format, ...);
 
 #elif _WIN32
     #define WIN32_LEAN_AND_MEAN 
@@ -90,6 +92,7 @@ void print_log(int log_type, const char* format, ...);
     #define LOG_ERROR    1
     #define LOG_INFO     2
     #define LOG_WARNING  3
+    #define LOG_EMPTY    4
 
     #define C_RESET  7
     #define C_RED    4
@@ -99,14 +102,14 @@ void print_log(int log_type, const char* format, ...);
     #define C_ACQUA FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY
     
     void print_log(int log_type, const WCHAR* format, ...);
+    void log_file(const WCHAR* file, int log_type, const WCHAR* format, ...);
 #endif
-
-void log_file(const char* file, int log_type, const char* format, ...);
 
 #ifdef LIB_PRINT_IMPLEMENTATION
 
 #ifdef __linux__
-void print_log(int log_type, const char* format, ...){
+void print_log(int log_type, const char* format, ...)
+{
 
     va_list args;
     va_start(args, format);
@@ -141,6 +144,51 @@ void print_log(int log_type, const char* format, ...){
     va_end(args);
     return;
 }
+
+void log_file(const char* file, int log_type, const char* format, ...)
+{
+    FILE* file_to_open = fopen(file, "a");
+
+    if(file_to_open == NULL){
+        print_log(LOG_ERROR, "[ERROR] Could not open: %s for log\n", file);
+        return;
+    }
+
+    va_list args;
+    va_start(args, format);
+
+    switch(log_type){
+        case LOG_SUCCESS:
+            fprintf(file_to_open, "[SUCCESS] ");
+            vfprintf(file_to_open, format, args);
+            break;
+    
+        case LOG_ERROR:
+            fprintf(file_to_open, "[ERROR] ");
+            vfprintf(file_to_open, format, args);
+            break;
+        
+        case LOG_INFO:
+            fprintf(file_to_open, "[INFO] ");
+            vfprintf(file_to_open, format, args);
+            break;
+        
+        case LOG_WARNING:
+            fprintf(file_to_open, "[WARNING] ");
+            vfprintf(file_to_open, format, args);
+            break;
+        
+        case LOG_EMPTY:
+            vfprintf(file_to_open, format, args);
+            break;
+    }
+
+    va_end(args);
+    fclose(file_to_open);
+    
+    return;
+}
+
 #endif
 
 #ifdef _WIN32
@@ -193,17 +241,13 @@ void print_log(int log_type, const WCHAR* format, ...)
     return;
 
 }
-#endif
 
-void log_file(const char* file, int log_type, const char* format, ...){
-    FILE* file_to_open = fopen(file, "a");
+void log_file(const WCHAR* file, int log_type, const WCHAR* format, ...)
+{
+    FILE* file_to_open = _wfopen(file, L"a");
 
     if(file_to_open == NULL){
-        #ifdef __linux__
-            print_log(LOG_ERROR, "[ERROR] Could not open: %s for log\n", file);
-        #elif _WIN32
-            print_log(LOG_ERROR, L"[ERROR] Could not open: %s for log\n", file);
-        #endif
+        print_log(LOG_ERROR, L"[ERROR] Could not open: %s for log\n", file);
         return;
     }
 
@@ -212,32 +256,27 @@ void log_file(const char* file, int log_type, const char* format, ...){
 
     switch(log_type){
         case LOG_SUCCESS:
-            fprintf(file_to_open, "[SUCCESS] ");
-            vfprintf(file_to_open, format, args);
-            fprintf(file_to_open, "\n");
+            fwprintf(file_to_open, L"[SUCCESS] ");
+            vfwprintf(file_to_open, format, args);
             break;
     
         case LOG_ERROR:
-            fprintf(file_to_open, "[ERROR] ");
-            vfprintf(file_to_open, format, args);
-            fprintf(file_to_open, "\n");
+            fwprintf(file_to_open, L"[ERROR] ");
+            vfwprintf(file_to_open, format, args);
             break;
         
         case LOG_INFO:
-            fprintf(file_to_open, "[INFO] ");
-            vfprintf(file_to_open, format, args);
-            fprintf(file_to_open, "\n");
+            fwprintf(file_to_open, L"[INFO] ");
+            vfwprintf(file_to_open, format, args);
             break;
         
         case LOG_WARNING:
-            fprintf(file_to_open, "[WARNING] ");
-            vfprintf(file_to_open, format, args);
-            fprintf(file_to_open, "\n");
+            fwprintf(file_to_open, L"[WARNING] ");
+            vfwprintf(file_to_open, format, args);
             break;
         
-        default:
-            vfprintf(file_to_open, format, args);
-            fprintf(file_to_open, "\n");
+        case LOG_EMPTY:
+            vfwprintf(file_to_open, format, args);
             break;
     }
 
@@ -249,3 +288,5 @@ void log_file(const char* file, int log_type, const char* format, ...){
 
 
 #endif
+
+#endif /*LIB_PRINT_IMPLEMENTATION*/
