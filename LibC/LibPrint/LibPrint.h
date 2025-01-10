@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Andrea Michael M. Molino
+ * Copyright (c) 2024-2025 Andrea Michael M. Molino
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,37 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#ifdef __linux__
+///
+///Macro section
+///
 
-    #define LOG_SUCCESS  0
-    #define LOG_ERROR    1
-    #define LOG_INFO     2
-    #define LOG_WARNING  3
-    #define LOG_EMPTY    4
+#if defined(WIN64) || defined(_WIN64) || defined(__MINGW64__)
+	#define __WINDOWS_64__
+#elif defined(WIN32) || defined(_WIN32) || defined(__MINGW32__)
+	#define __WINDOWS_32__
+#endif
+
+#if defined(__WINDOWS_64__) || defined(__WINDOWS_32__)
+    #define __WINDOWS__
+#endif
+
+#ifdef __linux__
+    #define LINUX
+#endif
+
+typedef enum {
+    Success = 0,
+    Error,
+    Info,
+    Warning,
+    Custom
+}LogType;
+
+///
+///End Macro section
+//
+
+#ifdef LINUX
 
     #define C_RESET  "\x1B[0m"
     #define C_RED    "\x1B[1;31m"
@@ -42,12 +66,10 @@
     #define C_BLUE   "\x1B[1;34m"
     #define C_ORANGE "\x1B[1;93m"
 
-    void print_log(int log_type, const char* format, ...);
-    void log_file(const char* file, int log_type, const char* format, ...);
+    void print(LogType type, const char* format, ...);
+    void log_file(LogType type, const char* file,  const char* format, ...);
 
-#elif _WIN32
-    #define WIN32_LEAN_AND_MEAN 
-    #include <windows.h>
+#elif __WINDOWS__
 /*
     #define NOGDICAPMASKS
     #define NOVIRTUALKEYCODES
@@ -72,7 +94,6 @@
     #define NOMB
     #define NOMEMMGR
     #define NOMETAFILE
-    #define NOMINMAX
     #define NOMSG
     #define NOOPENFILE
     #define NOSCROLL
@@ -86,13 +107,11 @@
     #define NOPROFILER
     #define NODEFERWINDOWPOS
     #define NOMCX
-*/
-    
-    #define LOG_SUCCESS  0
-    #define LOG_ERROR    1
-    #define LOG_INFO     2
-    #define LOG_WARNING  3
-    #define LOG_EMPTY    4
+*/  
+    #define NOMINMAX
+    #define WIN32_LEAN_AND_MEAN 
+    #include <Windows.h>
+
 
     #define C_RESET  7
     #define C_RED    4
@@ -101,86 +120,92 @@
     #define C_BLUE   1
     #define C_ACQUA FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY
     
-    void print_log(int log_type, const WCHAR* format, ...);
-    void log_file(const WCHAR* file, int log_type, const WCHAR* format, ...);
+    void print(LogType type, const WCHAR* format, ...);
+    void log_file(LogType type, const WCHAR* file, const WCHAR* format, ...);
 #endif
 
 #ifdef LIB_PRINT_IMPLEMENTATION
 
-#ifdef __linux__
-void print_log(int log_type, const char* format, ...)
+#ifdef LINUX
+void print(LogType type, const char* format, ...)
 {
 
     va_list args;
     va_start(args, format);
 
-    switch (log_type)
+    switch (type)
     {
-        case LOG_SUCCESS:
+        case Success:
             fprintf(stdout, "%s[SUCCESS]%s ", C_GREEN, C_RESET);
             vfprintf(stdout, format, args);
             break;
     
-        case LOG_ERROR:
+        case Error:
             fprintf(stdout, "%s[ERROR]%s ", C_RED, C_RESET);
             vfprintf(stdout, format, args);
             break;
         
-        case LOG_INFO:
+        case Info:
             fprintf(stdout, "%s[INFO]%s ", C_YELLOW, C_RESET);
             vfprintf(stdout, format, args);
             break;
         
-        case LOG_WARNING:
+        case Warning:
             fprintf(stdout, "%s[WARNING]%s ", C_ORANGE, C_RESET);
             vfprintf(stdout, format, args);
             break;
         
-        default:
+        case Custom:
             vfprintf(stdout, format, args);
             break;
+        
+        default:
+            __builtin_unreachable();
     }
 
     va_end(args);
     return;
 }
 
-void log_file(const char* file, int log_type, const char* format, ...)
+void log_file(LogType type, const char* file,  const char* format, ...)
 {
     FILE* file_to_open = fopen(file, "a");
 
     if(file_to_open == NULL){
-        print_log(LOG_ERROR, "[ERROR] Could not open: %s for log\n", file);
+        print(Error, "[ERROR] Could not open: %s for log\n", file);
         return;
     }
 
     va_list args;
     va_start(args, format);
 
-    switch(log_type){
-        case LOG_SUCCESS:
+    switch(type){
+        case Success:
             fprintf(file_to_open, "[SUCCESS] ");
             vfprintf(file_to_open, format, args);
             break;
     
-        case LOG_ERROR:
+        case Error:
             fprintf(file_to_open, "[ERROR] ");
             vfprintf(file_to_open, format, args);
             break;
         
-        case LOG_INFO:
+        case Info:
             fprintf(file_to_open, "[INFO] ");
             vfprintf(file_to_open, format, args);
             break;
         
-        case LOG_WARNING:
+        case Warning:
             fprintf(file_to_open, "[WARNING] ");
             vfprintf(file_to_open, format, args);
             break;
         
-        case LOG_EMPTY:
+        case Custom:
             vfprintf(file_to_open, format, args);
             break;
+        
+        default:
+            __builtin_unreachable();
     }
 
     va_end(args);
@@ -191,49 +216,51 @@ void log_file(const char* file, int log_type, const char* format, ...)
 
 #endif
 
-#ifdef _WIN32
-void print_log(int log_type, const WCHAR* format, ...)
+#ifdef __WINDOWS__
+void print(LogType type, const WCHAR* format, ...)
 {
     va_list args;
     va_start(args, format);
 
-
     HANDLE hConsole;
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    switch (log_type)
+    switch (type)
     {
-        case LOG_SUCCESS:
+        case Success:
             SetConsoleTextAttribute(hConsole, C_GREEN);
             fwprintf(stdout, L"[SUCCESS] ");
             SetConsoleTextAttribute(hConsole, C_RESET);
             vfwprintf(stdout, format, args);
             break;
     
-        case LOG_ERROR:
+        case Error:
             SetConsoleTextAttribute(hConsole, C_RED);
             fwprintf(stdout, L"[ERROR] ");
             SetConsoleTextAttribute(hConsole, C_RESET);
             vfwprintf(stdout, format, args);
             break;
         
-        case LOG_INFO:
+        case Info:
             SetConsoleTextAttribute(hConsole, C_ACQUA);
             fwprintf(stdout, L"[INFO] ");
             SetConsoleTextAttribute(hConsole, C_RESET);
             vfwprintf(stdout, format, args);
             break;
         
-        case LOG_WARNING:
+        case Warning:
             SetConsoleTextAttribute(hConsole, C_YELLOW);
             fwprintf(stdout, L"[WARNING] ");
             SetConsoleTextAttribute(hConsole, C_RESET);
             vfwprintf(stdout, format, args);
             break;
         
-        default:
+        case Custom:
             vfwprintf(stdout, format, args);
             break;
+        
+        default:
+            __assume(0);
     }
 
     va_end(args);
@@ -242,42 +269,45 @@ void print_log(int log_type, const WCHAR* format, ...)
 
 }
 
-void log_file(const WCHAR* file, int log_type, const WCHAR* format, ...)
+void log_file(LogType type, const WCHAR* file, const WCHAR* format, ...)
 {
     FILE* file_to_open = _wfopen(file, L"a");
 
     if(file_to_open == NULL){
-        print_log(LOG_ERROR, L"[ERROR] Could not open: %s for log\n", file);
+        print(Error, L"[ERROR] Could not open: %s for log\n", file);
         return;
     }
 
     va_list args;
     va_start(args, format);
 
-    switch(log_type){
-        case LOG_SUCCESS:
+    switch(type){
+        case Success:
             fwprintf(file_to_open, L"[SUCCESS] ");
             vfwprintf(file_to_open, format, args);
             break;
     
-        case LOG_ERROR:
+        case Error:
             fwprintf(file_to_open, L"[ERROR] ");
             vfwprintf(file_to_open, format, args);
             break;
         
-        case LOG_INFO:
+        case Info:
             fwprintf(file_to_open, L"[INFO] ");
             vfwprintf(file_to_open, format, args);
             break;
         
-        case LOG_WARNING:
+        case Warning:
             fwprintf(file_to_open, L"[WARNING] ");
             vfwprintf(file_to_open, format, args);
             break;
         
-        case LOG_EMPTY:
+        case Custom:
             vfwprintf(file_to_open, format, args);
             break;
+        
+        default:
+            __assume(0);
     }
 
     va_end(args);
@@ -285,8 +315,6 @@ void log_file(const WCHAR* file, int log_type, const WCHAR* format, ...)
     
     return;
 }
-
-
 #endif
 
 #endif /*LIB_PRINT_IMPLEMENTATION*/
