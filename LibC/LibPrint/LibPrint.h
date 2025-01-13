@@ -32,13 +32,13 @@
 ///
 
 #if defined(WIN64) || defined(_WIN64) || defined(__MINGW64__)
-	#define __WINDOWS_64__
+	#define WINDOWS_64
 #elif defined(WIN32) || defined(_WIN32) || defined(__MINGW32__)
-	#define __WINDOWS_32__
+	#define WINDOWS_32
 #endif
 
-#if defined(__WINDOWS_64__) || defined(__WINDOWS_32__)
-    #define __WINDOWS__
+#if defined(WINDOWS_64) || defined(WINDOWS_32)
+    #define WINDOWS
 #endif
 
 #ifdef __linux__
@@ -55,9 +55,9 @@ typedef enum {
 
 ///
 ///End Macro section
-//
+///
 
-#ifdef LINUX
+#if defined(LINUX)
 
     #define C_RESET  "\x1B[0m"
     #define C_RED    "\x1B[1;31m"
@@ -69,7 +69,7 @@ typedef enum {
     void print(LogType type, const char* format, ...);
     void log_file(LogType type, const char* file,  const char* format, ...);
 
-#elif __WINDOWS__
+#elif defined(WINDOWS)
 /*
     #define NOGDICAPMASKS
     #define NOVIRTUALKEYCODES
@@ -120,8 +120,8 @@ typedef enum {
     #define C_BLUE   1
     #define C_ACQUA FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY
     
-    void print(LogType type, const WCHAR* format, ...);
-    void log_file(LogType type, const WCHAR* file, const WCHAR* format, ...);
+    void print(LogType type, CONST WCHAR* format, ...);
+    void log_file(LogType type, CONST WCHAR* file, CONST WCHAR* format, ...);
 #endif
 
 #ifdef LIB_PRINT_IMPLEMENTATION
@@ -141,8 +141,8 @@ void print(LogType type, const char* format, ...)
             break;
     
         case Error:
-            fprintf(stdout, "%s[ERROR]%s ", C_RED, C_RESET);
-            vfprintf(stdout, format, args);
+            fprintf(stderr, "%s[ERROR]%s ", C_RED, C_RESET);
+            vfprintf(stderr, format, args);
             break;
         
         case Info:
@@ -172,7 +172,7 @@ void log_file(LogType type, const char* file,  const char* format, ...)
     FILE* file_to_open = fopen(file, "a");
 
     if(file_to_open == NULL){
-        print(Error, "[ERROR] Could not open: %s for log\n", file);
+        print(Error, "Could not open: %s for log\n", file);
         return;
     }
 
@@ -216,8 +216,8 @@ void log_file(LogType type, const char* file,  const char* format, ...)
 
 #endif
 
-#ifdef __WINDOWS__
-void print(LogType type, const WCHAR* format, ...)
+#ifdef WINDOWS
+void print(LogType type, CONST WCHAR* format, ...)
 {
     va_list args;
     va_start(args, format);
@@ -236,9 +236,9 @@ void print(LogType type, const WCHAR* format, ...)
     
         case Error:
             SetConsoleTextAttribute(hConsole, C_RED);
-            fwprintf(stdout, L"[ERROR] ");
+            fwprintf(stderr, L"[ERROR] ");
             SetConsoleTextAttribute(hConsole, C_RESET);
-            vfwprintf(stdout, format, args);
+            vfwprintf(stderr, format, args);
             break;
         
         case Info:
@@ -269,12 +269,13 @@ void print(LogType type, const WCHAR* format, ...)
 
 }
 
-void log_file(LogType type, const WCHAR* file, const WCHAR* format, ...)
+void log_file(LogType type, CONST WCHAR* file, CONST WCHAR* format, ...)
 {
-    FILE* file_to_open = _wfopen(file, L"a");
+    FILE* file_to_open = NULL; 
+    _wfopen_s(&file_to_open, file, L"a");
 
     if(file_to_open == NULL){
-        print(Error, L"[ERROR] Could not open: %s for log\n", file);
+        print(Error, L"Could not open: %s for log\n", file);
         return;
     }
 
