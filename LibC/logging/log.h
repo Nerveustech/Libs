@@ -131,7 +131,7 @@ typedef enum {
     void log_file(LogType type, CONST WCHAR* file, CONST WCHAR* format, ...);
 #endif
 
-#ifdef LIB_PRINT_IMPLEMENTATION
+#ifdef LIB_LOG_IMPLEMENTATION
 
 #ifdef __linux__
 void info(const char* format, ...)
