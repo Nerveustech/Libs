@@ -65,6 +65,7 @@ typedef enum {
 
     void info(const char* format, ...);
     void debug(const char* format, ...);
+    void okay(const char* format, ...);
     void warning(const char* format, ...);
     void error(const char* format, ...);
     void critical(const char* format, ...);
@@ -124,6 +125,7 @@ typedef enum {
 
     void info(CONST WCHAR* format, ...);
     void debug(CONST WCHAR* format, ...);
+    void okay(CONST WCHAR* format, ...);
     void warning(CONST WCHAR* format, ...);
     void error(CONST WCHAR* format, ...);
     void critical(CONST WCHAR* format, ...);
@@ -160,6 +162,21 @@ void debug(const char* format, ...)
     va_start(args, format);
 
     fprintf(stdout, "%s[DEBUG]%s ", LOG_COLOR_BLUE, LOG_COLOR_RESET);
+    vfprintf(stdout, format, args);
+    va_end(args);
+}
+
+void okay(const char* format, ...)
+{
+    if(format == NULL){
+        error("%s: format is NULL!", __func__);
+        return;
+    }
+
+    va_list args;
+    va_start(args, format);
+
+    fprintf(stdout, "%s[SUCCESS]%s ", LOG_COLOR_GREEN, LOG_COLOR_RESET);
     vfprintf(stdout, format, args);
     va_end(args);
 }
@@ -294,6 +311,26 @@ void debug(CONST WCHAR* format, ...)
 
     SetConsoleTextAttribute(hConsole, LOG_COLOR_ACQUA);
     fwprintf(stdout, L"[DEBUG] ");
+    SetConsoleTextAttribute(hConsole, LOG_COLOR_RESET);
+    vfwprintf(stdout, format, args);
+    
+    va_end(args);
+}
+
+void okay(CONST WCHAR* format, ...)
+{
+    if(format == NULL){
+        error(L"%s: format is NULL!", __func__);
+        return;
+    }
+
+    va_list args;
+    va_start(args, format);
+    HANDLE hConsole;
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    SetConsoleTextAttribute(hConsole, LOG_COLOR_GREEN);
+    fwprintf(stdout, L"[SUCCESS] ");
     SetConsoleTextAttribute(hConsole, LOG_COLOR_RESET);
     vfwprintf(stdout, format, args);
     
