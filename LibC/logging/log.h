@@ -263,7 +263,7 @@ void log_file(LogType type, const char* file,  const char* format, ...)
 void info(CONST WCHAR* format, ...)
 {
     if(format == NULL){
-        error("%s: format is NULL!", __func__);
+        error(L"%s: format is NULL!", __func__);
         return;
     }
 
@@ -283,7 +283,7 @@ void info(CONST WCHAR* format, ...)
 void debug(CONST WCHAR* format, ...)
 {
     if(format == NULL){
-        error("%s: format is NULL!", __func__);
+        error(L"%s: format is NULL!", __func__);
         return;
     }
 
@@ -303,7 +303,7 @@ void debug(CONST WCHAR* format, ...)
 void warning(CONST WCHAR* format, ...)
 {
     if(format == NULL){
-        error("%s: format is NULL!", __func__);
+        error(L"%s: format is NULL!", __func__);
         return;
     }
 
@@ -323,7 +323,7 @@ void warning(CONST WCHAR* format, ...)
 void error(CONST WCHAR* format, ...)
 {
     if(format == NULL){
-        error("%s: format is NULL!", __func__);
+        error(L"%s: format is NULL!", __func__);
         return;
     }
 
@@ -343,7 +343,7 @@ void error(CONST WCHAR* format, ...)
 void critical(CONST WCHAR* format, ...)
 {
     if(format == NULL){
-        error("%s: format is NULL!", __func__);
+        error(L"%s: format is NULL!", __func__);
         return;
     }
 
